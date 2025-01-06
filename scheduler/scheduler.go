@@ -30,3 +30,11 @@ type Metrics struct {
 	Throughput            float64
 	Utilization           float64
 }
+
+type Scheduler struct {
+	processes []ProcessWithState
+	time      int
+	quantum   int
+	totalTime int
+	logs      []string
+}
