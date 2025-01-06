@@ -22,3 +22,11 @@ type ProcessWithState struct {
 	EndTime        int
 	Logs           []string
 }
+
+type Metrics struct {
+	AverageTurnaroundTime float64
+	AverageWaitingTime    float64
+	AverageResponseTime   float64
+	Throughput            float64
+	Utilization           float64
+}
