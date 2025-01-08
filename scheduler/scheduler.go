@@ -2,6 +2,7 @@ package scheduler
 
 import (
 	"OS_Scheduling_algorithms/io"
+	"fmt"
 )
 
 type State string
@@ -56,4 +57,12 @@ func NewScheduler(processes []io.Process, quantum int) *Scheduler {
 		quantum:   quantum,
 		logs:      []string{},
 	}
+}
+
+func (s *Scheduler) logStateChange(p *ProcessWithState, newState State) {
+	timestamp := fmt.Sprintf("Time %d: Process %d moved to %s state", s.time, p.Process.Id, newState)
+	p.Logs = append(p.Logs, timestamp)
+	s.logs = append(s.logs, timestamp)
+	p.State = newState
+
 }
