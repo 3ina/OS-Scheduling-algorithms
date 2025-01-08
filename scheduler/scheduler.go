@@ -66,3 +66,7 @@ func (s *Scheduler) logStateChange(p *ProcessWithState, newState State) {
 	p.State = newState
 
 }
+
+func (s *Scheduler) admit(p *ProcessWithState) {
+	s.logStateChange(p, Ready)
+}
