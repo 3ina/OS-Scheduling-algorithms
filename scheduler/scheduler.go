@@ -87,3 +87,7 @@ func (s *Scheduler) ioRequest(p *ProcessWithState) {
 	s.logStateChange(p, Waiting)
 	s.time += p.Process.IoBurstTime
 }
+
+func (s *Scheduler) ioCompletion(p *ProcessWithState) {
+	s.logStateChange(p, Ready)
+}
