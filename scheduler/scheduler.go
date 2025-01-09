@@ -70,3 +70,15 @@ func (s *Scheduler) logStateChange(p *ProcessWithState, newState State) {
 func (s *Scheduler) admit(p *ProcessWithState) {
 	s.logStateChange(p, Ready)
 }
+
+func (s *Scheduler) dispatch(p *ProcessWithState) {
+	if p.StartTime == 0 {
+		p.StartTime = s.time
+		p.ResponseTime = s.time - p.Process.ArrivalTime
+	}
+	s.logStateChange(p, Running)
+}
+
+func (s *Scheduler) preempt(p *ProcessWithState) {
+	s.logStateChange(p, Ready)
+}
