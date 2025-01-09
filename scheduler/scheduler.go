@@ -91,3 +91,26 @@ func (s *Scheduler) ioRequest(p *ProcessWithState) {
 func (s *Scheduler) ioCompletion(p *ProcessWithState) {
 	s.logStateChange(p, Ready)
 }
+
+func (s *Scheduler) terminate(p *ProcessWithState) {
+	s.logStateChange(p, Terminated)
+	p.EndTime = s.time
+	p.TurnaroundTime = p.EndTime - p.Process.ArrivalTime
+	p.WaitTime = p.TurnaroundTime - p.Process.CpuBurstTime1 - p.Process.IoBurstTime - p.Process.CpuBurstTime2
+}
+
+func (s *Scheduler) RunFCFS() []ProcessWithState {
+	var result []ProcessWithState
+	for i, _ := range s.processes {
+		process := &s.processes[i]
+		if s.time < process.Process.ArrivalTime {
+			s.time = process.Process.ArrivalTime
+		}
+		s.dispatch(process)
+		s.time += process.Process.CpuBurstTime1 + process.Process.CpuBurstTime2 + process.Process.IoBurstTime
+		s.terminate(process)
+		result = append(result, *process)
+
+	}
+	return result
+}
