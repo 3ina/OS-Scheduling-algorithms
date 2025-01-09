@@ -82,3 +82,8 @@ func (s *Scheduler) dispatch(p *ProcessWithState) {
 func (s *Scheduler) preempt(p *ProcessWithState) {
 	s.logStateChange(p, Ready)
 }
+
+func (s *Scheduler) ioRequest(p *ProcessWithState) {
+	s.logStateChange(p, Waiting)
+	s.time += p.Process.IoBurstTime
+}
