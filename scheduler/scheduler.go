@@ -3,6 +3,7 @@ package scheduler
 import (
 	"OS_Scheduling_algorithms/io"
 	"fmt"
+	"sort"
 )
 
 type State string
@@ -112,5 +113,52 @@ func (s *Scheduler) RunFCFS() []ProcessWithState {
 		result = append(result, *process)
 
 	}
+	return result
+}
+
+func (s *Scheduler) RunSJF() []ProcessWithState {
+	var result []ProcessWithState
+	remaining := make([]*ProcessWithState, len(s.processes))
+
+	for i, _ := range s.processes {
+		remaining[i] = &s.processes[i]
+	}
+
+	for len(remaining) > 0 {
+		ready := []*ProcessWithState{}
+
+		for _, process := range remaining {
+			if process.Process.ArrivalTime <= s.time {
+				ready = append(ready, process)
+			}
+		}
+
+		sort.Slice(ready, func(i, j int) bool {
+			return ready[i].Process.CpuBurstTime1 < ready[j].Process.CpuBurstTime1
+		})
+
+		if len(ready) == 0 {
+			s.time = remaining[0].Process.ArrivalTime
+			continue
+		}
+
+		process := ready[0]
+
+		for i, p := range remaining {
+			if p == process {
+				remaining = append(remaining[:i], remaining[i+1:]...)
+				break
+			}
+		}
+
+		s.dispatch(process)
+		s.time += process.Process.CpuBurstTime1
+		s.time += process.Process.IoBurstTime
+		s.time += process.Process.CpuBurstTime2
+		s.terminate(process)
+		result = append(result, *process)
+
+	}
+
 	return result
 }
