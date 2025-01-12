@@ -162,3 +162,38 @@ func (s *Scheduler) RunSJF() []ProcessWithState {
 
 	return result
 }
+
+func (s *Scheduler) RunRR() []ProcessWithState {
+	var result []ProcessWithState
+	queue := []*ProcessWithState{}
+
+	for i, _ := range s.processes {
+		queue = append(queue, &s.processes[i])
+	}
+
+	for len(queue) > 0 {
+		process := queue[0]
+		queue = queue[1:]
+		if s.time < process.Process.ArrivalTime {
+			s.time = process.Process.ArrivalTime
+		}
+		s.dispatch(process)
+
+		if process.Process.CpuBurstTime1 > s.quantum {
+			s.time += s.quantum
+			process.Process.CpuBurstTime1 -= s.quantum
+			s.logStateChange(process, Ready)
+			queue = append(queue, process)
+
+		} else {
+			s.time += process.Process.CpuBurstTime1
+			process.Process.CpuBurstTime1 = 0
+			s.time += process.Process.IoBurstTime
+			s.time += process.Process.CpuBurstTime2
+			s.terminate(process)
+			result = append(result, *process)
+
+		}
+	}
+	return result
+}
